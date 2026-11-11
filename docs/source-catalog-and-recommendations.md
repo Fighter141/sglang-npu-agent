@@ -62,7 +62,7 @@
 - `triton-operator-precision-eval`
 - `triton-operator-doc-gen`
 
-目前已迁入所有上述 Skill 的入口文件，并选择性同步部分 references / scripts / templates；仍需补齐剩余依赖文件、检查相对路径、脚本安全和适用硬件版本。不能将“入口文件已迁入”描述为整个上游 Skill 已完整验证。
+已选择性迁入上述 25 个 Skill 入口及其 151 个文件（SKILL.md、references、scripts、templates、examples），源文件均来自固定 Commit。仍需检查相对路径、子 Skill 调用关系、脚本安全和适用硬件版本；文件同步完成不等于执行验证完成。
 
 ### 2.2 Profiling 工具链边界
 
@@ -72,7 +72,7 @@
 - **msmonitor**：设备资源指标采集，与 Run ID / 时间戳 / 设备 / Rank 关联。
 - **MindIE Profiler**：不作为本项目必需依赖。只有在逐文件核查后确认存在 msprof / msit 未覆盖、可独立复用的解析器或分析能力时，才考虑选用。
 
-目标链路：Run Manifest → msprof 采集 → 原始 Trace → 统一事件 Schema → Host / Device 时间线 → 算子 / 通信 / HBM 归因 → msmonitor 资源关联 → 跨轮次比较。当前链路仍在建设，不代表统一 Parser 已实现。
+目标链路：Run Manifest → msprof 采集 → 原始 Trace → 统一事件 Schema → Host / Device 时间线 → 算子 / 通信 / HBM 归因 → msmonitor 资源关联 → 跨轮次比较。当前链路仍在建设，不代表统一 Parser 已实现。MindIE Profiler 不作为本项目必需依赖；只有未来核查到 msprof / msit 未覆盖且可独立复用的功能，才单独评估。
 
 ## 3. MindIE Agent 组件（可选参考）
 
