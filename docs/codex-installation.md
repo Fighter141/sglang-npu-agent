@@ -1,64 +1,60 @@
 # Codex 安装与使用
 
-本项目采用 CANNBot Skills 类似的“安装器 + Agent Skills 开放标准”模式，但当前仅实现仓库内 Skill 的项目级 / 全局复制安装。
+## 推荐方式：通用 Agent Skills CLI
 
-## 1. 获取项目
+本项目遵循 Agent Skills 开放格式。可以直接从 GitHub 安装，不需要本项目先发布 npm 包。
+
+前置要求：Node.js 22.20 或更高版本。
+
+### 1. 查看仓库中可安装的 Skill
 
 ```bash
-git clone https://github.com/Fighter141/sglang-npu-agent.git
-cd sglang-npu-agent
+npx skills add Fighter141/sglang-npu-agent --list
 ```
 
-## 2. 查看可安装 Skill
+### 2. 安装到当前项目
 
 ```bash
-node scripts/install-helper.mjs list
+npx skills add Fighter141/sglang-npu-agent --skill sglang-npu-project --agent codex
 ```
 
-当前仅包含 `sglang-npu-project` 项目入口 Skill。模型适配、MoE、Profiling 等专项 Skill 尚未实现，不会作为空壳发布。
+默认安装为项目级 Skill，适合与当前项目一起提交和共享。
 
-## 3. 安装到当前项目（推荐）
-
-在目标 SGLang 项目根目录执行：
+### 3. 安装到 Codex 全局
 
 ```bash
-node /path/to/sglang-npu-agent/scripts/install-helper.mjs install sglang-npu-project --target .
+npx skills add Fighter141/sglang-npu-agent --skill sglang-npu-project --agent codex --global
 ```
 
-安装位置：`.agents/skills/sglang-npu-project/`。
+全局 Skill 可在多个项目中使用。
 
-也可以在本仓库根目录直接执行：
+### 4. 交互式安装
 
 ```bash
-node scripts/install-helper.mjs install sglang-npu-project
+npx skills add Fighter141/sglang-npu-agent
 ```
 
-## 4. 安装到 Codex 全局
+按提示选择要安装的 Skill 和 Coding Agent。
+
+### 5. 更新与卸载
 
 ```bash
-node scripts/install-helper.mjs install sglang-npu-project --level global
+npx skills check
+npx skills update
+npx skills remove sglang-npu-project
 ```
 
-安装位置：`~/.agents/skills/sglang-npu-project/`。
+## 本仓库自带安装脚本
 
-## 5. 管理
+`scripts/install-helper.mjs` 是本地辅助脚本，主要用于调试安装目录和复制行为。当前不作为用户主入口，也未发布 npm 包。
 
-```bash
-node scripts/install-helper.mjs list
-node scripts/install-helper.mjs status
-node scripts/install-helper.mjs doctor
-node scripts/install-helper.mjs uninstall sglang-npu-project
-``
+## 当前可安装能力
 
-覆盖更新可加 `--force`。卸载只删除目标 Skill 目录，不修改其他项目文件。
+目前只有 `sglang-npu-project` 项目入口 Skill，提供架构导航、开发规范、迁移来源和任务边界。模型适配、MoE 优化、Profiling 等专项 Skill 尚未实现，因此不会出现在安装列表中。
 
-## 6. 与 npx skills 兼容
+## 重要说明
 
-每个 Skill 遵循 Agent Skills 格式，后续可使用通用 `skills` CLI 安装单项能力。安装路径与工具选择以该 CLI 当前版本为准。
-
-## 7. 当前限制
-
-- 本仓库尚未发布 npm 包，因此暂不能使用 `npx @...` 形式运行本项目安装器。
-- 当前安装器只负责复制 Skill 文件，不安装 MCP Server、远程执行环境或 CANN 依赖。
-- Codex 通常需要新开会话或刷新 Skill 列表后识别新安装的 Skill。
-- 项目级 Skill 放在目标项目的 `.agents/skills/`；全局 Skill 放在 `~/.agents/skills/`。
+- 安装 Skill 不等于安装远程执行、NPU 管理、Benchmark 或 Profiler 服务。
+- 新安装后如 Codex 未立即发现 Skill，重新打开项目或启动新会话。
+- 只安装本项目实际提供的 Skill；不要把路线图中的规划项当作已发布能力。
+- 通用 CLI 的选项和 Node.js 版本要求以其当前文档为准。
