@@ -1,156 +1,71 @@
 # SGLang NPU Agent
 
-An agentic engineering workspace for developing, deploying, optimizing, and debugging [SGLang](https://github.com/sgl-project/sglang) on Ascend NPUs.
+面向昇腾 NPU 上 SGLang 开发、部署、性能调优与故障诊断的智能研发工作区。
 
-> **Project status:** bootstrap / architecture proposal. This repository starts with workflow contracts and scaffolding; it does not claim that the planned tools or skills are implemented.
+> 项目处于架构与工程骨架阶段。路线图中的规划能力不代表已经实现。
 
-## Goals
+## 项目目标
 
-- Make SGLang-on-Ascend development workflows reproducible.
-- Separate agent decisions from deterministic tools and remote execution.
-- Preserve benchmark, correctness, profiling, and environment evidence for every change.
-- Reuse upstream SGLang, Ascend, CANN, and community knowledge with source/version traceability.
-- Support model bring-up, serving configuration, MoE, graph, speculative decoding, PD disaggregation, profiling, and regression workflows.
+- 工程化 SGLang + Ascend 的模型适配、服务部署、性能优化和故障定位。
+- 将 Agent 决策与 SSH、设备分配、服务管理、Benchmark、Profiler 等确定性执行能力分离。
+- 为每次实验保存可追溯的源码、软硬件环境、模型、Workload、配置、日志和性能证据。
+- 复用 SGLang、CANN、昇腾及社区项目的公开知识和工具，并记录来源、版本、许可证与适用边界。
 
-## Architecture
+## 总体架构
 
-The project adopts a **Plugin / Workflow → Agent → Skill** organization, with independent infrastructure services and a governed knowledge layer.
+采用 **Plugin / Workflow → Agent → Skill** 组织任务入口和专业能力；将确定性执行能力建设为独立服务；以可追溯知识库和实验数据作为持续迭代基础。
 
 ```text
-User / Coding Agent (Codex, Claude Code, Cursor, ...)
-  |
-  +-- Plugins / Workflows       task entry, routing, gates, orchestration
-  |     +-- model bring-up
-  |     +-- performance optimization
-  |     +-- incident diagnosis
-  |     +-- release / regression
-  |
-  +-- Specialist Agents         bounded roles; optional, not mandatory
-  |     +-- model / correctness
-  |     +-- performance / profiling
-  |     +-- runtime / distributed debugging
-  |     +-- reviewer
-  |
-  +-- Skills                    reusable procedures and decision logic
-  |     +-- SGLang model adapter
-  |     +-- Ascend serving & configuration
-  |     +-- MoE / EP / communication
-  |     +-- graph / FIA / MTP
-  |     +-- benchmark / profiler / debugging
-  |
-  +-- Infrastructure Services   deterministic execution, independently testable
-  |     +-- remote-dev / job manager
-  |     +-- NPU coordinator / resource leases
-  |     +-- benchmark runner
-  |     +-- profiler & trace analyzer
-  |     +-- experiment ledger / artifact store
-  |     +-- git / CI / regression
-  |
-  +-- Knowledge                 versioned, sourced, validated engineering knowledge
-        +-- hardware & software constraints
-        +-- procedures / workflows
-        +-- model and PR history
-        +-- validated optimization lessons
+用户 / Codex / Claude Code / Cursor
+  ├── Plugin / Workflow：任务入口、路由、流程编排、阶段门禁
+  ├── Agent：模型与正确性、性能与 Profiling、Runtime / 分布式故障、代码审查
+  ├── Skill：模型适配、Serving 配置、MoE / EP、Graph / FIA / MTP、Benchmark / Debug
+  ├── 基础服务：Remote Dev、NPU Coordinator、Serving、Benchmark、Profiler、Experiment Store
+  └── Knowledge：硬件与软件约束、API / 算子、SOP、故障案例、模型与优化经验
 ```
 
-### Architectural rules
-
-1. **Skills decide; tools execute.** Do not implement SSH, device allocation, process supervision, benchmark execution, or profiler parsing as prompt-only instructions.
-2. **Evidence before optimization.** Establish a reproducible baseline and correctness check before changing performance-sensitive code.
-3. **Separate diagnostic and acceptance measurements.** Profiling explains bottlenecks; non-profiled benchmark runs establish performance claims.
-4. **Every result is attributable.** Record source commit, model revision, container/image, CANN/driver/PyTorch/torch_npu/SGLang versions, hardware topology, launch arguments, workload, warmup, repetitions, and raw outputs.
-5. **Framework-neutral core, SGLang-first adapter.** Keep common experiment and evidence contracts independent of SGLang internals; put framework-specific logic behind adapters.
-6. **Knowledge is evidence-bearing.** Mark claims as hardware specification, upstream documentation, reproduced result, single observation, or hypothesis. Keep negative results.
-7. **No silent configuration changes.** Show the effective configuration and explain deviations from defaults.
-8. **Human approval for destructive or costly operations.** Resource release, process termination, environment replacement, and long multi-node runs require explicit safety boundaries.
-
-## Repository layout
+## 目录结构
 
 ```text
 .
-├── AGENTS.md
-├── README.md
-├── CONTRIBUTING.md
-├── LICENSE
-├── docs/
-│   ├── architecture.md
-│   ├── roadmap.md
-│   └── workflow/
-├── plugins/                  # end-to-end task workflows and routing
-├── agents/                   # optional role definitions and handoff contracts
-├── skills/                   # procedural skills: SKILL.md + references + scripts
-│   ├── README.md
-│   ├── model-bringup/
-│   ├── serving-config/
-│   ├── performance-optimization/
-│   ├── benchmark/
-│   ├── profiling/
-│   ├── incident-triage/
-│   └── code-review/
-├── services/                 # deterministic tools; not prompt instructions
-│   ├── remote-dev/
-│   ├── npu-coordinator/
-│   ├── benchmark/
-│   ├── profiler/
-│   └── experiment-store/
-├── knowledge/                # sourced knowledge cards and schemas
-│   ├── schema/
-│   ├── hardware/
-│   ├── software/
-│   ├── sglang/
-│   ├── models/
-│   └── lessons/
-├── reference/                # stable contracts, workload and artifact specs
-│   ├── schemas/
-│   └── templates/
-├── runs/                     # local experiment outputs; ignored by git
-└── tests/                    # lint, schema, routing, and workflow tests
+├── docs/          # 架构、迁移来源、路线图和工作流文档
+├── plugins/       # 端到端任务入口与工作流
+├── agents/        # 可选的专业角色与交接契约
+├── skills/        # SKILL.md、references、按需脚本
+├── services/      # 远程执行、资源、评测、分析等确定性服务
+├── knowledge/     # 按知识规范组织的来源可追溯知识卡
+├── reference/     # Schema、接口契约、Workload 与产物模板
+├── runs/          # 本地实验产物，默认不提交 Git
+└── tests/         # Schema、路由、脚本和工作流测试
 ```
 
-## Initial workflow lifecycle
+## 研发闭环
 
-`Discover → Baseline → Diagnose → Plan → Change → Correctness → Benchmark → Review → Record`
+调研 → 基线 → 诊断 → 方案 → 修改 → 正确性验证 → 性能评测 → Review → 经验沉淀。
 
-A performance optimization must not skip baseline capture, correctness validation, or controlled comparison. Failed attempts and regressions should be retained as searchable evidence.
+性能优化必须先建立可复现基线；Profiler 用于解释瓶颈，非 Profiling 的 Benchmark 用于确认性能结论。
 
-## Initial scope
+## 上游项目与迁移来源
 
-### P0 — establish a reliable engineering loop
-- Repository and environment inventory
-- SGLang + Ascend version compatibility record
-- Remote command/job execution contract
-- NPU topology and resource reservation contract
-- Reproducible baseline benchmark manifest
-- Correctness and performance result schema
-- Profiler collection / analysis interface
-- Experiment record and regression comparison
+**每个模块的迁移来源、拟研究路径、迁移方式和状态均登记在 [迁移来源映射表](docs/source-migration-map.md)。** 当前均为候选来源，不代表代码已复制或适配完成。
 
-### P1 — SGLang-specific optimization workflows
-- Model bring-up and model support diagnosis
-- Serving configuration audit and effective-config capture
-- MoE / EP / communication mode comparison
-- CUDA Graph / NPU graph and attention backend compatibility
-- MTP / speculative decoding evaluation
-- Prefill / decode and PD-disaggregation analysis
+- [CANNBot](https://gitcode.com/cann/cannbot) / [CANNBot Skills](https://gitcode.com/cann/cannbot-skills)：Plugin、Agent、Skill 组织方式。
+- [CANNBot Knowledge](https://gitcode.com/cann/cannbot-knowledge)：OKF v0.2、知识卡、Ingest / Query / Lint 和治理。
+- [CANNBot DSL](https://gitcode.com/cann/cannbot-dsl) / [CANN Bench](https://gitcode.com/cann/cann-bench) / [CANNBot Sentry](https://gitcode.com/cann/cannbot-sentry)：算子 DSL、测试基准与质量保障候选参考。
+- [vLLM-Ascend Workspace](https://github.com/mindie-agent/vllm-ascend-workspace)：多仓工作区、Worktree、远程 NPU 开发与服务测试。
+- [xLLM AI Coding Workflow](https://github.com/xLLM-AI/xllm-workflow)：实验生命周期、证据 Schema、Benchmark 公平性与优化闭环。
+- [MindIE Agent](https://github.com/mindie-agent/mindie-agent)：Remote Dev、Coordinator、Profiler、Debugger 等基础设施职责边界。
+- [SGLang](https://github.com/sgl-project/sglang)：目标推理框架及 Ascend NPU 后端的实际代码与文档。
 
-### P2 — advanced automation
-- Automated candidate generation and bounded tuning
-- Cross-version regression tracking
-- Knowledge ingestion, deduplication, validation, and promotion
-- Multi-agent parallel investigation with isolated worktrees
+迁移前必须逐项检查源文件、固定版本、许可证、依赖和适用范围。不得将参考项目的能力描述为本项目已经实现。
 
-## Upstream references
+## 开发原则
 
-- [SGLang](https://github.com/sgl-project/sglang)
-- [SGLang Ascend NPU documentation](https://github.com/sgl-project/sglang/tree/main/docs/docs/hardware-platforms/ascend-npus)
-- [vLLM-Ascend Workspace](https://github.com/mindie-agent/vllm-ascend-workspace) — workspace and multi-worktree patterns
-- [xLLM AI Coding Workflow](https://github.com/xLLM-AI/xllm-workflow) — experiment lifecycle and evidence patterns
-- [Ascend Agent Skills](https://github.com/Ascend/agent-skills) — reusable Ascend-specific skills
-- [CANNBot Knowledge](https://gitcode.com/cann/cannbot-knowledge) — knowledge organization and governance reference
-- [MindIE Agent](https://github.com/mindie-agent/mindie-agent) — remote execution, coordination, profiler, and debugger component boundaries
+1. Skill 负责判断和编排，服务负责确定性执行。
+2. 先证据后修改：性能工作先测基线，正确性工作先建立复现。
+3. 每个结论必须能追溯到源码版本、环境、模型、Workload 和原始产物。
+4. 区分上游文档事实、上游代码事实、真机复现、单次观察和假设。
+5. 不静默修改配置；展示最终生效配置及其与默认值的差异。
+6. 进程终止、环境替换、资源释放和昂贵多机任务必须有明确安全边界和用户授权。
 
-These are references, not vendored dependencies. Reuse code only after checking its license, compatibility, and maintenance status.
-
-## Status
-
-See [docs/roadmap.md](docs/roadmap.md). The initial commit defines the intended boundaries and contracts; implementation will be added incrementally and validated on real Ascend hardware.
+项目状态见 [路线图](docs/roadmap.md)。
