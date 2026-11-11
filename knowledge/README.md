@@ -1,5 +1,7 @@
 # 工程知识库
 
+知识导航入口：[knowledge/index.md](index.md)。
+
 本目录用于保存可追溯、可检索、带适用条件和验证状态的 SGLang NPU 工程知识。
 
 ## 设计来源
