@@ -62,7 +62,7 @@
 - `triton-operator-precision-eval`
 - `triton-operator-doc-gen`
 
-已选择性迁入上述 25 个 Skill 入口及其 151 个文件（SKILL.md、references、scripts、templates、examples），源文件均来自固定 Commit。仍需检查相对路径、子 Skill 调用关系、脚本安全和适用硬件版本；文件同步完成不等于执行验证完成。
+已选择性迁入上述 25 个 Skill 入口及其 150 个文件（SKILL.md、references、scripts、templates、examples），源文件均来自固定 Commit。仅省略空目录占位文件 `.gitkeep`。仍需检查相对路径、子 Skill 调用关系、脚本安全和适用硬件版本；仅省略了空目录占位文件 `.gitkeep`；其余 150 个上游文件均已同步。文件同步完成不等于执行验证完成。
 
 ### 2.2 Profiling 工具链边界
 
