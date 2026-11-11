@@ -106,7 +106,14 @@ def install_one(src: Path, dst: Path) -> None:
     prepared, backup = stage / "prepared", stage / "previous"
     try:
         shutil.copytree(src, prepared)
-        shutil.copy2(ROOT / "LICENSE", prepared / "LICENSE")
+        skill_text = (src / "SKILL.md").read_text(encoding="utf-8")
+        if "MulanPSL-2.0" in skill_text:
+            shutil.copy2(ROOT / ".agents" / "third-party-licenses" / "MulanPSL-2.0.txt", prepared / "LICENSE")
+        else:
+            shutil.copy2(ROOT / "LICENSE", prepared / "LICENSE")
+        notices = ROOT / "THIRD_PARTY_NOTICES.md"
+        if notices.is_file():
+            shutil.copy2(notices, prepared / "THIRD_PARTY_NOTICES.md")
         if src.name == PROJECT_SKILL:
             bundle = prepared / "references" / "project"
             bundle.mkdir(parents=True)
