@@ -1,13 +1,15 @@
 # 建设路线图
 
-状态：Skills 第一批已建立工作流指南；确定性执行服务、自动化脚本和目标硬件验证仍待建设。
+状态：Skills 第一批已建立工作流指南；安装器及 CPU 回归测试已建立。确定性执行服务、NPU 自动化脚本和目标硬件验证仍待建设。
 
 ## P0：让 Skill 可安装、可执行、可验证
 
 - [x] Codex Agent Skills 目录与项目入口 Skill。
 - [x] Python 标准库安装器自动发现 Skill。
 - [x] 第一批专项 Skill：模型适配、Serving、性能优化、Benchmark、Profiling、故障诊断、代码审查、MoE、Graph / MTP、算子开发。
-- [ ] 安装器单元测试：项目级 / 全局、覆盖、卸载、空目录和路径边界。
+- [x] 安装器单元测试：项目级 / 全局、覆盖、卸载、空目录和路径边界。
+- [x] 入口 Skill 分发配套资料；安装来源记录、覆盖失败恢复和批量卸载隔离。
+- [x] GitHub Actions CPU 测试工作流（Python 3.9 / 3.12）；不代表已完成目标硬件验证。
 - [ ] 在实际 Codex 环境验证 Skill 发现与调用。
 - [ ] 每个专项 Skill 增加来源核查记录、参考资料和适用版本。
 - [ ] 版本与仓库探测：SGLang、Ascend 后端、CANN、Driver、Firmware、PyTorch、torch_npu。

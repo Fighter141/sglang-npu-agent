@@ -24,17 +24,19 @@
 # 查看所有可安装 Skill
 python3 scripts/install.py list
 
-# 交互式选择并安装
-python3 scripts/install.py install
+# 交互式选择并安装到另一个项目
+python3 scripts/install.py install --target /path/to/target-project
 
 # 安装全部当前 Skill
-python3 scripts/install.py install --all
+python3 scripts/install.py install --all --target /path/to/target-project
 
 # 安装到 Codex 全局目录
 python3 scripts/install.py install --all --global
 ```
 
 安装器自动扫描 `.agents/skills/`，新增符合规范的 Skill 后无需修改安装器。
+
+直接使用本源码仓库无需安装。入口 Skill 安装时附带 `references/project/` 资料；来源记录用于安全卸载。覆盖、旧版升级和检查方法见 [安装指南](../docs/codex-installation.md)。
 
 ## 质量要求
 

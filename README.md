@@ -2,7 +2,7 @@
 
 面向昇腾 NPU 上 SGLang 开发、部署、性能调优与故障诊断的智能研发工作区。
 
-> 项目状态：第一批 11 个 Agent Skills 已建立；确定性执行服务、自动化脚本和昇腾真机验证仍在持续建设。
+> 项目状态：11 个 Agent Skills 可作为工作流指南使用；Python 安装器提供配套资料打包、来源记录和 CPU 回归测试。SSH、NPU 资源管理、Serving、Benchmark、Profiler 执行服务仍待实现，未完成昇腾真机验证。
 
 ## 项目目标
 
@@ -37,8 +37,8 @@ Codex 会读取根目录 `AGENTS.md`，并发现 `.agents/skills/` 下的项目�
 git clone https://github.com/Fighter141/sglang-npu-agent.git
 cd sglang-npu-agent
 
-# 交互式选择 Skill，安装到当前目录对应的项目
-python3 scripts/install.py install
+# 交互式选择 Skill，安装到指定项目
+python3 scripts/install.py install --target /path/to/target-project
 
 # 安装指定 Skill 到另一个项目
 python3 scripts/install.py install sglang-npu-project --target /path/to/target-project
@@ -48,6 +48,14 @@ python3 scripts/install.py install sglang-npu-project --global
 ```
 
 安装器只使用 Python 标准库，不需要 npm、Node.js 或第三方 CLI。完整命令见 [Codex 安装指南](docs/codex-installation.md)。
+
+要求 Python 3.9+。直接在本仓库使用时无需安装；安装到其他项目时，入口 Skill 自带文档、知识库和实验模板，不依赖源仓库继续存在。
+
+CPU 回归测试（不连接集群、不占用 NPU）：
+
+```bash
+python3 -m unittest discover -s tests -v
+```
 
 ## 知识库
 

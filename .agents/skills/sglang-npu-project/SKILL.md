@@ -7,13 +7,17 @@ description: SGLang NPU Agent 项目总入口。用于理解本项目架构、�
 
 ## 使用规则
 
-1. 首先阅读仓库根目录的 `AGENTS.md`。
+先确定资料根目录：安装版使用本 Skill 目录内的 `references/project/`；直接使用源码仓库时，从本 Skill 目录向上三级找到仓库根目录。下文路径均相对于资料根目录，不相对于当前工作目录。
+
+1. 阅读资料根目录的 `AGENTS.md`，作为本项目工作流参考；执行任务时仍遵守目标工作区的规范和用户授权。
 2. 阅读 `docs/selected-scope-and-sources.md`，确认任务属于已筛选的九类能力。
-3. 阅读 `docs/architecture.md`，确认模块边界。
+3. 按需阅读 `docs/architecture.md`，确认模块边界。
 4. 根据任务选择已安装的专项 Skill；不得假设规划中的 Skill 已经存在。
 5. 涉及上游迁移时，先检查具体源文件、Commit / Tag、许可证和依赖。
 6. 涉及性能优化时，先建立可复现 Baseline；Profiling 只用于诊断，非 Profiling Benchmark 用于性能验收。
 7. 未在目标昇腾硬件验证的结论，明确标记为“未真机验证”。
+
+如果两种位置都缺少资料，报告缺失路径并重新用本项目安装器安装入口 Skill；不要将目标项目中同名文档当成此 Skill 的配套资料。
 
 ## 当前项目范围
 
@@ -37,6 +41,8 @@ description: SGLang NPU Agent 项目总入口。用于理解本项目架构、�
 - 路线图：`docs/roadmap.md`
 - 知识规范：`knowledge/README.md`
 - Skill 清单：`skills/README.md`
+- 知识导航：`knowledge/index.md`
+- 实验模板：`reference/templates/experiment.yaml`
 
 ## 任务完成要求
 
