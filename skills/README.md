@@ -1,17 +1,17 @@
-# Skills Catalog
+# Skills 能力目录
 
-Skills are procedural entry points. Each skill should contain a concise `SKILL.md`, task-specific `references/`, and deterministic helper `scripts/` only when needed.
+Skill 是可复用的操作规程和决策流程。每个 Skill 应包含简洁的 `SKILL.md`，并按需提供 `references/`、`scripts/` 和测试。
 
-## Planned skills
+| Skill | 目标 | 主要迁移参考 | 状态 |
+|---|---|---|---|
+| `sglang-model-bringup` | 模型结构、权重、算子和精度适配 | CANNBot Skills 模型迁移类；SGLang 官方模型接入文档；VAWS 工作流组织 | 规划中 |
+| `sglang-serving-config` | 配置生成、参数校验和生效配置采集 | VAWS Serving；MindIE Agent remote-dev / coordinator；SGLang Ascend 文档 | 规划中 |
+| `sglang-performance-optimization` | 多轮端到端性能优化闭环 | xLLM Workflow SOTA Loop；CANNBot Skills 推理优化类 | 规划中 |
+| `sglang-benchmark` | Workload、预热、重复测量、公平性与报告 | xLLM Workflow Benchmark / Eval Runner；VAWS Benchmark | 规划中 |
+| `ascend-profiling` | msprof 采集、解析和瓶颈归因 | MindIE Agent Profiler；VAWS Profiling Collection / Analysis | 规划中 |
+| `sglang-incident-triage` | Runtime、HCCL、Graph、OOM、精度故障定位 | MindIE Agent Debugger；xLLM Incident Triage；CANNBot Sentry | 规划中 |
+| `sglang-code-review` | 适配正确性、兼容性和性能回归审查 | CANNBot Skills Review 类；xLLM NPU Code Review | 规划中 |
+| `sglang-moe-optimization` | EP、通信后端、负载均衡和融合优化 | SGLang Ascend 实现；CANNBot 推理优化知识；本项目实测 | 规划中 |
+| `sglang-graph-mtp-optimization` | Graph、FIA、MTP 组合和收益评估 | SGLang Ascend 文档 / 源码；CANNBot 知识；本项目实测 | 规划中 |
 
-| Skill | Purpose | Status |
-|---|---|---|
-| `sglang-model-bringup` | Analyze support gaps and bring up a model on Ascend | Planned |
-| `sglang-serving-config` | Generate/audit serving configuration and compatibility | Planned |
-| `sglang-performance-optimization` | Evidence-driven end-to-end optimization loop | Planned |
-| `sglang-benchmark` | Reproducible performance benchmark | Planned |
-| `ascend-profiling` | Collect and analyze msprof evidence | Planned |
-| `sglang-incident-triage` | Diagnose correctness, runtime, graph, HCCL and OOM incidents | Planned |
-| `sglang-code-review` | Review changes for correctness, compatibility and regressions | Planned |
-
-Do not add empty skills merely to fill this table. Add each when its input/output contract and validation procedure are defined.
+不要为了填满目录而创建空 Skill。只有明确输入输出、适用范围、执行步骤和验证方式后才新增。
