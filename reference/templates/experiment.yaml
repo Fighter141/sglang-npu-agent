@@ -1,7 +1,7 @@
-# Copy per experiment. Replace placeholders; do not commit private paths or credentials.
+# 每次实验复制一份并填写。不得提交私有路径、凭据或未脱敏日志。
 schema_version: "0.1"
 experiment_id: "YYYYMMDD-short-name"
-purpose: "Describe the question being tested"
+purpose: "本次实验要回答的问题"
 status: "planned" # planned | running | completed | failed | archived
 
 source:
@@ -10,7 +10,7 @@ source:
   patch_ref: ""
 
 environment:
-  device_model: ""       # e.g. 910C / A3; specify exact topology
+  device_model: ""       # 例如 910C / A3；填写准确拓扑
   device_count: 0
   cann_version: ""
   driver_version: ""
