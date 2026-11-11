@@ -2,9 +2,25 @@
 
 ## 架构决策
 
-采用 **CANNBot 的 Plugin / Agent / Skill 作为任务组织模型**，但不直接复制其面向 CANN 通用开发的全部实现。知识治理参考 CANNBot Knowledge；实验闭环参考 xLLM Workflow；多仓与远程开发工作区参考 VAWS；远程执行、资源协调和观测工具的职责拆分参考 MindIE Agent。
+采用 **CANNBot 的 Plugin / Agent / Skill 作为任务组织模型**，参考 CANNBot Knowledge 建设知识治理；参考 MindIE Agent 的基础设施职责拆分。所有框架适配、模型调用链和性能优化逻辑以 SGLang 主仓及实际 Ascend 后端为准。
+
+本项目明确不迁移 vLLM / vLLM-Ascend / xLLM 的框架专属能力、脚本、接口、配置和工作流，也不依赖 VAWS 或 xLLM 作为实现底座。
 
 核心原则：**Agent 负责理解与决策，Skill 负责流程与判断，Service 负责确定性执行，Knowledge 负责可追溯经验。**
+
+## 九类能力范围
+
+1. Agent 架构与任务编排：Plugin、Agent、Skill、任务路由和上下文管理。
+2. 知识库与经验管理：Schema、知识卡、Ingest、Query、Lint、来源追踪和经验沉淀。
+3. 开发环境与远程机器管理：仓库、SSH、容器、环境探测、NPU 拓扑和远程任务。
+4. 模型适配与部署：SGLang 模型接入、权重、算子兼容、服务配置和验证。
+5. 推理性能优化：MoE / EP、Attention、Graph、FIA、MTP、KV Cache、PD。
+6. Benchmark 与实验管理：Workload、预热、重复测量、A/B、消融、实验记录和回归。
+7. Profiling 与故障诊断：msprof、HBM、通信、Runtime、Graph、HCCL、OOM 和精度问题。
+8. 算子开发与优化：AscendC、Triton-Ascend、实际使用的 DSL、Kernel 生成和验证。
+9. 代码审查与持续回归：SGLang / Ascend 后端 PR 影响分析、正确性和性能回归。
+
+具体来源、边界和迁移方式见 [已筛选能力与迁移来源](selected-scope-and-sources.md)。
 
 ## 六个逻辑层
 
@@ -17,49 +33,28 @@
 | Knowledge | 领域事实、SOP、Workflow、故障与优化经验 | 无证据结论 |
 | Reference / Schema | 稳定接口、实验清单、产物格式和机器契约 | 临时实验观察 |
 
-Agent 层不是第一阶段的硬性依赖。先用单 Agent + Workflow + Skills + Services 跑通闭环，再根据任务并行度和独立审查需求引入多 Agent。
+Agent 层不是第一阶段的硬性依赖。先用单 Agent + Workflow + Skills + Services 跑通闭环，再根据需要引入多 Agent。
 
-## 核心任务工作流
+## 基础服务边界与来源
 
-### 模型适配 / Bring-up
-模型结构与配置检查 → SGLang 支持缺口分析 → 权重与 Tokenizer 检查 → 后端算子 / Attention / MoE 适配 → 精度验证 → NPU 服务 Smoke Test → 适配报告。
+- remote-dev：SSH、远端文件、容器命令和后台任务。参考 MindIE Agent remote-dev。
+- npu-coordinator：设备探测、拓扑、NPU 与端口租约。参考 MindIE Agent coordinator。
+- serving-manager：SGLang 服务启动、健康检查、Smoke Test、停止和清理。以 SGLang 启动接口实现，不迁移其他框架 Serving。
+- benchmark：Workload、预热、重复测量、指标归一化和结果保存。以 SGLang 官方测试接口及本项目 Schema 独立实现。
+- profiler：msprof / torch profiler 采集、解析和跨轮次对比。参考 MindIE Agent Profiler 与 CANN 官方工具。
+- experiment-store：Run Manifest、Attempt Ledger、配置快照和产物索引。按本项目需求独立实现。
+- git-ci：仓库状态、上游同步、PR 检查和回归门禁。以 SGLang 仓库规范为准。
 
-### 推理服务配置
-硬件拓扑探测 → 版本兼容检查 → TP / DP / EP / PP 等并行策略 → Attention Backend / Graph / FIA → KV Cache 与显存预算 → MTP / Speculative Decoding 兼容性 → 生效配置采集 → 服务验证。
-
-### 性能优化
-固定 SLA 与 Workload → 预热 Baseline → 分析 TTFT / TPOT / 吞吐 / HBM / 通信 → Profiler 定位 → 候选收益与风险排序 → 单变量修改 → 正确性验证 → 非 Profiling A/B → 消融 → 记录结论。
-
-### 故障诊断
-稳定复现 → 收集版本、日志和拓扑 → 分类为模型 / 算子 / Runtime / Graph / HCCL / 内存 / 调度 → 最小化定位 → 修复 → 正确性与性能回归 → 形成知识卡。
-
-### PR 与版本回归
-上游变更追踪 → 影响模块识别 → 兼容性检查 → 目标硬件构建 → 正确性测试 → 性能回归 → 变更与证据报告。
-
-## 基础服务边界
-
-- `remote-dev`：SSH、远端文件读写、代码同步、容器命令、后台任务和日志读取。迁移参考：MindIE Agent `remote-dev`、VAWS 远程工具。
-- `npu-coordinator`：机器 / 容器台账、设备拓扑、NPU 与端口租约。迁移参考：MindIE Agent `coordinator`。
-- `serving-manager`：服务启动、健康检查、Smoke Test、停止与清理。迁移参考：VAWS Serving Skill，需改为 SGLang。
-- `benchmark`：Workload、预热、重复测量、指标归一化和结果保存。迁移参考：VAWS Benchmark、xLLM Workflow Benchmark。
-- `profiler`：msprof / torch profiler 采集、解析、关联和跨轮次对比。迁移参考：VAWS Profiling、MindIE Agent Profiler。
-- `experiment-store`：Run Manifest、Attempt Ledger、配置快照、产物索引和经验晋升。迁移参考：xLLM Workflow Lifecycle。
-- `git-ci`：Worktree、上游同步、PR 检查和回归门禁。迁移参考：VAWS Workspace。
-
-以上是目标接口边界，不代表服务当前已经实现。优先封装成熟 CLI / SDK，不为每个工具重新造轮子。
+以上是目标接口边界，不代表服务当前已经实现。
 
 ## 知识体系
 
-参考 CANNBot Knowledge 的 OKF v0.2 文件化 Knowledge Bundle：Markdown + YAML Frontmatter、目录和 `index.md` 渐进导航、Git 版本审计。正式落地前必须核对其 Schema、Profile、Contract 和安装脚本；当前仓库尚未宣称通过 OKF 一致性检查。
+参考 CANNBot Knowledge 的 OKF / Knowledge Bundle 思路：Markdown + YAML Frontmatter、渐进式索引、来源治理和 Schema / Lint。正式落地前核对其 Schema、Profile、Contract 和许可证；当前仓库尚未宣称通过 OKF 一致性检查。
 
-建议知识分为硬件 / 软件约束、API / 算子 / 框架接口、模型适配 / 部署 / 排障 SOP、经验证的代码变换和优化经验。证据等级与知识类别分离。
+## 性能证据
 
-## 实验与性能证据
+每次实验记录源码 Commit、CANN / Driver / Firmware / PyTorch / torch_npu 版本、设备拓扑、模型 Revision、Workload、启动命令、生效配置、Warmup、重复次数和原始产物。Profiling 用于瓶颈归因，非 Profiling 数据用于性能验收。
 
-采用 xLLM Workflow 的 Run / Attempt / Checkpoint / Finalize 思路，但将执行器适配为 SGLang。每次实验有唯一 Run ID；每个候选修改是独立 Attempt；保留环境快照、原始日志、Benchmark、正确性和 Profiler 产物。性能验收使用非 Profiling 数据。
+## 实施顺序
 
-## 部署策略
-
-第一阶段以本地 CLI / Coding Agent + SSH 远程执行为主。服务接口保持传输层无关，后续需要时再提供 MCP 或 Web UI。不要在单 Agent 工作流和确定性服务尚未跑通前，先开发复杂多 Agent Runtime、任务调度平台或 Web 控制台。
-
-详细来源与迁移路径见 [迁移来源映射表](source-migration-map.md)。
+先建设远程执行、环境探测、服务管理、Benchmark、正确性验证和实验记录；再建设 SGLang 专项优化 Skill；最后完善知识 Ingest / Query / Lint 和自动经验沉淀。避免先开发复杂多 Agent Runtime 或 Web 控制台。
