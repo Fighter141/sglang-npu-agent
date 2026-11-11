@@ -1,30 +1,30 @@
 # 建设路线图
 
-状态：规划中。只有完成实现并在声明的软硬件环境验证后，才能将任务标记为完成。
+状态：Skills 第一批已建立工作流指南；确定性执行服务、自动化脚本和目标硬件验证仍待建设。
 
-## P0：可信的工程执行与证据闭环
+## P0：让 Skill 可安装、可执行、可验证
 
-- [ ] SGLang / Ascend 后端 / CANN / Driver / Firmware / PyTorch / torch_npu 版本探测。
-- [ ] 远程主机 / 容器清单与安全命令执行（参考 MindIE Agent remote-dev）。
-- [ ] NPU 拓扑探测、设备占用检查和资源租约（参考 MindIE Agent coordinator）。
+- [x] Codex Agent Skills 目录与项目入口 Skill。
+- [x] Python 标准库安装器自动发现 Skill。
+- [x] 第一批专项 Skill：模型适配、Serving、性能优化、Benchmark、Profiling、故障诊断、代码审查、MoE、Graph / MTP、算子开发。
+- [ ] 安装器单元测试：项目级 / 全局、覆盖、卸载、空目录和路径边界。
+- [ ] 在实际 Codex 环境验证 Skill 发现与调用。
+- [ ] 每个专项 Skill 增加来源核查记录、参考资料和适用版本。
+- [ ] 版本与仓库探测：SGLang、Ascend 后端、CANN、Driver、Firmware、PyTorch、torch_npu。
+- [ ] 远程主机 / 容器安全命令执行与 NPU 拓扑 / 资源管理。
 - [ ] SGLang 服务启动、健康检查、Smoke Test、停止和清理。
-- [ ] SGLang Benchmark Workload、预热、重复测量和结果归档。
-- [ ] 正确性 Smoke Test 与结果归档。
-- [ ] msprof 采集、解析和跨轮次对比（参考 MindIE Agent Profiler、CANN 官方工具）。
-- [ ] Baseline / Candidate 公平性检查、实验记录和性能回归。
-- [ ] Skill 路由、知识 Schema、脚本和工作流测试。
+- [ ] SGLang Benchmark、正确性验证、msprof 采集和实验归档。
 
-## P1：SGLang NPU 专项能力
+## P1：SGLang NPU 专项自动化
 
-- [ ] 模型 Bring-up、支持缺口分析和适配报告。
-- [ ] 服务配置生成、参数校验和生效配置快照。
-- [ ] TP / DP / EP / PP / DCP 等并行策略分析。
+- [ ] 模型 Bring-up 自动化检查和支持缺口报告。
+- [ ] 服务配置参数解析、兼容性校验和生效配置采集。
+- [ ] TP / DP / EP / PP / DCP 并行策略分析。
 - [ ] MoE 通信后端、FuseEP / DeepEP 等模式对比。
 - [ ] Attention Backend、Graph / FIA 兼容性检查。
 - [ ] MTP / Speculative Decoding 收益与负优化判定。
 - [ ] PD 分离、Prefill / Decode 性能分析。
-- [ ] HBM、KV Cache、容量与并发规划。
-- [ ] AscendC / Triton-Ascend 算子开发、正确性和性能验证。
+- [ ] AscendC / Triton-Ascend 算子测试与性能回归。
 
 ## P2：知识治理与持续回归
 
@@ -37,4 +37,4 @@
 
 ## 验收原则
 
-每个工作流必须定义输入、输出、前置条件、失败分支、资源清理、安全门禁和验证证据。性能优化必须包含固定环境的 Baseline、候选版本、正确性结果、非 Profiling 性能测量和原始产物。知识卡必须标明来源、适用条件和证据等级。未经真机复现的内容不得标记为已验证。
+Skill 文档已建立不等于对应自动化工具已实现。每项能力分别标注文档工作流、脚本实现、集成测试和真机验证状态。性能优化必须包含固定环境 Baseline、正确性结果、非 Profiling 性能测量和原始产物。未经真机复现的内容不得标记为已验证。
