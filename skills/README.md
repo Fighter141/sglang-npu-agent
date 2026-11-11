@@ -69,6 +69,6 @@ python3 scripts/install.py install --all --global
 
 ## 迁入状态说明
 
-已从固定上游 Commit 选择性迁入 25 个 Skill 入口及其 151 个文件（SKILL.md、references、scripts、templates、examples）。迁移清单见 THIRD_PARTY_NOTICES.md 和 docs/source-catalog-and-recommendations.md。文件同步完成不代表脚本已安全审计或真机验证。**Skill 出现在安装列表不等于其所有自动化脚本已通过验证。**
+已从固定上游 Commit 选择性迁入 25 个 Skill 入口及其 150 个文件（SKILL.md、references、scripts、templates、examples）。迁移清单见 THIRD_PARTY_NOTICES.md 和 docs/source-catalog-and-recommendations.md。文件同步完成不代表脚本已安全审计或真机验证。**Skill 出现在安装列表不等于其所有自动化脚本已通过验证。**
 
 安装前应先阅读对应 Skill 的来源标记和限制；尤其不要直接执行会安装驱动、修改固件、创建 privileged 容器或运行多机通信测试的脚本。
