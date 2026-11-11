@@ -2,7 +2,7 @@
 
 面向昇腾 NPU 上 SGLang 开发、部署、性能调优与故障诊断的智能研发工作区。
 
-> 项目处于架构与工程骨架阶段。路线图中的规划能力不代表已经实现。
+> 项目状态：架构与工程骨架阶段。路线图中的规划能力不代表已经实现。
 
 ## 项目目标
 
@@ -11,29 +11,35 @@
 - 为每次实验保存可追溯的源码、软硬件环境、模型、Workload、配置、日志和性能证据。
 - 复用 SGLang、CANN、昇腾及社区项目的公开知识和工具，并记录来源、版本、许可证与适用边界。
 
+## 能力范围
+
+本项目只建设经筛选的 SGLang NPU 研发能力：Agent 架构与任务编排、知识库与经验管理、开发环境与远程机器管理、模型适配与部署、推理性能优化、Benchmark 与实验管理、Profiling 与故障诊断、算子开发与优化、代码审查与持续回归。
+
+**明确排除：vLLM / vLLM-Ascend / xLLM 专属的模型适配、Serving、Benchmark、工作流、脚本、接口和配置。** 不将这些项目作为实现依赖。详细范围及来源见 [已筛选能力与迁移来源](docs/selected-scope-and-sources.md)。
+
 ## 总体架构
 
 采用 **Plugin / Workflow → Agent → Skill** 组织任务入口和专业能力；将确定性执行能力建设为独立服务；以可追溯知识库和实验数据作为持续迭代基础。
 
 ```text
-用户 / Codex / Claude Code / Cursor
+用户 / Coding Agent
   ├── Plugin / Workflow：任务入口、路由、流程编排、阶段门禁
-  ├── Agent：模型与正确性、性能与 Profiling、Runtime / 分布式故障、代码审查
+  ├── Agent：模型与正确性、性能与 Profiling、Runtime 故障、代码审查
   ├── Skill：模型适配、Serving 配置、MoE / EP、Graph / FIA / MTP、Benchmark / Debug
   ├── 基础服务：Remote Dev、NPU Coordinator、Serving、Benchmark、Profiler、Experiment Store
-  └── Knowledge：硬件与软件约束、API / 算子、SOP、故障案例、模型与优化经验
+  └── Knowledge：硬件软件约束、API / 算子、SOP、故障案例、模型与优化经验
 ```
 
 ## 目录结构
 
 ```text
 .
-├── docs/          # 架构、迁移来源、路线图和工作流文档
+├── docs/          # 架构、筛选范围、迁移来源、路线图和工作流
 ├── plugins/       # 端到端任务入口与工作流
 ├── agents/        # 可选的专业角色与交接契约
 ├── skills/        # SKILL.md、references、按需脚本
 ├── services/      # 远程执行、资源、评测、分析等确定性服务
-├── knowledge/     # 按知识规范组织的来源可追溯知识卡
+├── knowledge/     # 来源可追溯的工程知识卡
 ├── reference/     # Schema、接口契约、Workload 与产物模板
 ├── runs/          # 本地实验产物，默认不提交 Git
 └── tests/         # Schema、路由、脚本和工作流测试
@@ -45,19 +51,15 @@
 
 性能优化必须先建立可复现基线；Profiler 用于解释瓶颈，非 Profiling 的 Benchmark 用于确认性能结论。
 
-## 上游项目与迁移来源
+## 主要技术来源
 
-**每个模块的迁移来源、拟研究路径、迁移方式和状态均登记在 [迁移来源映射表](docs/source-migration-map.md)。** 当前均为候选来源，不代表代码已复制或适配完成。
-
-- [CANNBot](https://gitcode.com/cann/cannbot) / [CANNBot Skills](https://gitcode.com/cann/cannbot-skills)：Plugin、Agent、Skill 组织方式。
-- [CANNBot Knowledge](https://gitcode.com/cann/cannbot-knowledge)：OKF v0.2、知识卡、Ingest / Query / Lint 和治理。
-- [CANNBot DSL](https://gitcode.com/cann/cannbot-dsl) / [CANN Bench](https://gitcode.com/cann/cann-bench) / [CANNBot Sentry](https://gitcode.com/cann/cannbot-sentry)：算子 DSL、测试基准与质量保障候选参考。
-- [vLLM-Ascend Workspace](https://github.com/mindie-agent/vllm-ascend-workspace)：多仓工作区、Worktree、远程 NPU 开发与服务测试。
-- [xLLM AI Coding Workflow](https://github.com/xLLM-AI/xllm-workflow)：实验生命周期、证据 Schema、Benchmark 公平性与优化闭环。
-- [MindIE Agent](https://github.com/mindie-agent/mindie-agent)：Remote Dev、Coordinator、Profiler、Debugger 等基础设施职责边界。
+- [CANNBot](https://gitcode.com/cann/cannbot) / [CANNBot Skills](https://gitcode.com/cann/cannbot-skills)：Agent、Plugin、Skill 组织方式。
+- [CANNBot Knowledge](https://gitcode.com/cann/cannbot-knowledge)：知识格式、Schema、Ingest / Query / Lint 和治理。
+- [MindIE Agent](https://github.com/mindie-agent/mindie-agent)：远程执行、资源协调、Profiler、Debugger 等基础设施职责边界。
+- [CANNBot DSL](https://gitcode.com/cann/cannbot-dsl) / [CANN Bench](https://gitcode.com/cann/cann-bench) / [CANNBot Sentry](https://gitcode.com/cann/cannbot-sentry)：算子开发、测试和质量保障候选参考。
 - [SGLang](https://github.com/sgl-project/sglang)：目标推理框架及 Ascend NPU 后端的实际代码与文档。
 
-迁移前必须逐项检查源文件、固定版本、许可证、依赖和适用范围。不得将参考项目的能力描述为本项目已经实现。
+所有来源均为候选参考，不代表代码已迁移。迁移前必须检查具体文件、固定版本、许可证、依赖和适用范围。
 
 ## 开发原则
 
@@ -67,5 +69,3 @@
 4. 区分上游文档事实、上游代码事实、真机复现、单次观察和假设。
 5. 不静默修改配置；展示最终生效配置及其与默认值的差异。
 6. 进程终止、环境替换、资源释放和昂贵多机任务必须有明确安全边界和用户授权。
-
-项目状态见 [路线图](docs/roadmap.md)。
