@@ -2,7 +2,7 @@
 
 面向昇腾 NPU 上 SGLang 开发、部署、性能调优与故障诊断的智能研发工作区。
 
-> 项目状态：架构与安装器骨架阶段。当前实际可安装的 Skill 只有项目入口 Skill；其他专项能力仍在规划中。
+> 项目状态：第一批 11 个 Agent Skills 已建立；确定性执行服务、自动化脚本和昇腾真机验证仍在持续建设。
 
 ## 项目目标
 
@@ -61,4 +61,4 @@ python3 scripts/install.py install sglang-npu-project --global
 - [CANNBot DSL](https://gitcode.com/cann/cannbot-dsl) / [CANN Bench](https://gitcode.com/cann/cann-bench) / [CANNBot Sentry](https://gitcode.com/cann/cannbot-sentry)：算子开发、测试和质量保障候选参考。
 - [SGLang](https://github.com/sgl-project/sglang)：目标推理框架及 Ascend NPU 后端的实际代码与文档。
 
-所有来源均为候选参考，不代表代码已迁移。迁移前必须检查具体文件、固定版本、许可证、依赖和适用范围。
+所有来源均为候选参考，不代表代码已迁移。迁移前必须检查具体文件、固定版本、许可证、依赖和适用范围。完整 Source 清单及新增候选见 [上游 Source 总表与补充调研](docs/source-catalog-and-recommendations.md)。
