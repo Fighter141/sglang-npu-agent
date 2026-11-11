@@ -1,0 +1,27 @@
+# Local configuration and credentials
+config.local.*
+.env
+.env.*
+*.pem
+*.key
+
+# Experiment outputs and large traces
+runs/
+artifacts/
+profiler-output/
+*.prof
+*.trace
+*.sqlite
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
