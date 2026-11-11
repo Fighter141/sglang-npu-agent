@@ -33,7 +33,7 @@
 |---|---|---|---|
 | [sgl-project/sglang](https://github.com/sgl-project/sglang) | 唯一框架事实基线 | 模型、Runtime、Scheduler、Ascend 后端、CLI、测试、CI | 直接以源码和文档为事实来源；只迁移适合本项目的上游 Agent Skills |
 | [Ascend NPU 文档](https://github.com/sgl-project/sglang/tree/main/docs/docs/hardware-platforms/ascend-npus) | 部署与调优指南 | 安装、模型支持、参数兼容、Profiling、FAQ | 建立本地索引和版本化知识卡 |
-| [SGLang 内置 Agent Skills](https://github.com/sgl-project/sglang/tree/main/.agents/skills) | 开发规范和研发流程 | CI Workflow、测试编写、Kernel 组织、模型 Cookbook | **值得直接纳入参考**：`write-sglang-test`、`ci-workflow-guide`、`rerun-test`、`kernel-organization` 等；保留上游链接和版本，不盲目复制全部 |
+| SGLang 上游源码 / 文档 / CI | 技术事实来源 | 模型、Runtime、Ascend 后端、参数、测试和 CI 行为 | Codex 在 SGLang 源码工作区可直接读取上游文件；本项目不重复导入上游 Skills，避免重复维护 |
 
 ## B. 新发现、值得补充的 Source
 
@@ -135,11 +135,11 @@
 
 | 优先级 | Source | 建议动作 | 原因 |
 |---|---|---|---|
-| P0 | SGLang 内置 Agent Skills | 引入测试、CI、Kernel 组织等通用开发规范 | 直接对应目标代码仓，避免 Skill 与上游开发方式脱节 |
+| P0 | CANNBot Knowledge | 导入知识 Schema、Bundle、索引、Lint / Query / Ingest | 解决知识库结构和治理能力缺失 |
 | P0 | Ascend/agent-skills | 筛选 AscendC 设计、编译、精度评估子 Skill | 当前算子开发 Skill 还缺少可复用的阶段化流程 |
 | P0 | Ascend/msprobe | 引入推理精度诊断 SOP 与工具调用知识 | 模型适配和算子优化必须有可靠精度定位 |
-| P1 | Ascend/msprof + MindIE profiler | 对齐采集、解析、指标和 Trace 工作流 | 避免重复实现 Profiling 工具 |
-| P1 | Ascend/msit | 研究环境预检与性能工具集成 | 可补充部署前检查 |
+| P0 | msprof + MindIE Profiler + msit | 统一采集入口、Trace 解析、Host / Device 时间线和指标模型 | 形成性能分析工具链，保留各自职责边界 |
+
 | P1 | Ascend/pytorch | 建立 torch_npu 版本化知识索引 | SGLang NPU 问题常涉及运行时行为 |
 | P2 | Ascend/msmonitor | 资源观测、任务前后状态和历史指标 | 远程任务与性能实验需要资源上下文 |
 | P2 | Ascend/msmodelslim | 量化格式和模型转换知识 | 只在实际模型适配需要时引入 |
@@ -153,3 +153,12 @@
 5. 不引入 vLLM、vLLM-Ascend、xLLM 的专属代码、配置、工作流和接口。
 6. 同一职责只指定一个主实现来源；其他项目作为补充知识，不形成重复工具。
 7. 每个导入项必须有本仓落点、测试和适用边界。
+
+
+## F. 用户确认的导入边界（2026-11-11）
+
+- CANNBot 生态：引入与 Agent / Skill / Knowledge / DSL / Benchmark / Sentry 相关且经筛选的内容。
+- SGLang 官方：不复制其内置 Skills；Codex 在 SGLang 原仓库工作区可直接读取原始 Skill 和源码。本项目只维护 SGLang NPU 特有的知识卡、适配工作流和技术索引。
+- Ascend 官方生态：选择性引入 Ascend Agent Skills、msprobe、msprof、msit、msmonitor、torch_npu 相关能力。
+- Profiling 工具链作为明确建设项：统一采集入口、Trace 解析与跨轮次比较、Host / Device 时间线、HBM / 通信 / 算子归因、资源监控关联。底层采集优先调用 msprof；评估 MindIE Profiler 可独立复用的解析分析能力；按需集成 msit Profile / 预检组件；msmonitor 提供资源监控数据。
+- 上述统一工具链当前处于知识设计和 Source 评估阶段，尚未实现统一 CLI / Parser / UI。
