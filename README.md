@@ -49,6 +49,10 @@ python3 scripts/install.py install sglang-npu-project --global
 
 安装器只使用 Python 标准库，不需要 npm、Node.js 或第三方 CLI。完整命令见 [Codex 安装指南](docs/codex-installation.md)。
 
+## 知识库
+
+知识库已经开始填充，入口见 [knowledge/index.md](knowledge/index.md)，覆盖硬件拓扑、软件栈版本、SGLang Ascend、模型适配、MoE、Profiling、精度诊断和算子开发。当前条目以来源索引和初始工作流为主，不代表已完成真机验证。
+
 ## 总体架构
 
 采用 Plugin / Workflow → Agent → Skill 组织任务入口和专业能力；将确定性执行能力建设为独立服务；以可追溯知识库和实验数据作为持续迭代基础。
