@@ -17,38 +17,32 @@
 
 明确排除 vLLM / vLLM-Ascend / xLLM 专属的模型适配、Serving、Benchmark、工作流、脚本、接口和配置。详细范围及来源见 [已筛选能力与迁移来源](docs/selected-scope-and-sources.md)。
 
-## Codex 安装
+## Codex 安装（推荐）
 
-本项目采用类似 CANNBot Skills 的安装方式：通过安装器将选定 Skill 安装到 Codex 项目级或全局目录。
+使用通用 Agent Skills CLI，直接从 GitHub 安装，不需要本项目先发布 npm 包。要求 Node.js 22.20 或更高版本。
 
 ```bash
-git clone https://github.com/Fighter141/sglang-npu-agent.git
-cd sglang-npu-agent
+# 先查看仓库提供的 Skill
+npx skills add Fighter141/sglang-npu-agent --list
 
-# 查看可安装 Skill
-node scripts/install-helper.mjs list
-
-# 安装项目入口 Skill 到当前仓库
-node scripts/install-helper.mjs install sglang-npu-project
+# 安装指定 Skill 到当前项目，目标为 Codex
+npx skills add Fighter141/sglang-npu-agent --skill sglang-npu-project --agent codex
 
 # 安装到 Codex 全局
-node scripts/install-helper.mjs install sglang-npu-project --level global
+npx skills add Fighter141/sglang-npu-agent --skill sglang-npu-project --agent codex --global
+
+# 检查更新
+npx skills check
+npx skills update
 ```
 
-详细说明见 [Codex 安装指南](docs/codex-installation.md)。当前安装器尚未发布 npm 包；专项 Skill 会在真正实现并验证后逐步加入，不发布空壳能力。
+也可以直接使用官方 Skills CLI 的交互式选择，省略 `--skill`。详细说明见 [Codex 安装指南](docs/codex-installation.md)。
+
+本仓库自己的 `scripts/install-helper.mjs` 仅作为本地开发 / 调试辅助，不是当前推荐的用户安装入口，也尚未发布 npm 包。
 
 ## 总体架构
 
 采用 Plugin / Workflow → Agent → Skill 组织任务入口和专业能力；将确定性执行能力建设为独立服务；以可追溯知识库和实验数据作为持续迭代基础。
-
-```text
-用户 / Coding Agent
-  ├── Plugin / Workflow：任务入口、路由、流程编排、阶段门禁
-  ├── Agent：模型与正确性、性能与 Profiling、Runtime 故障、代码审查
-  ├── Skill：模型适配、Serving 配置、MoE / EP、Graph / FIA / MTP、Benchmark / Debug
-  ├── 基础服务：Remote Dev、NPU Coordinator、Serving、Benchmark、Profiler、Experiment Store
-  └── Knowledge：硬件软件约束、API / 算子、SOP、故障案例、模型与优化经验
-```
 
 ## 主要技术来源
 
