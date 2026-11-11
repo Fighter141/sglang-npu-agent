@@ -1,0 +1,58 @@
+# Copy per experiment. Replace placeholders; do not commit private paths or credentials.
+schema_version: "0.1"
+experiment_id: "YYYYMMDD-short-name"
+purpose: "Describe the question being tested"
+status: "planned" # planned | running | completed | failed | archived
+
+source:
+  sglang_commit: ""
+  ascend_backend_commit: ""
+  patch_ref: ""
+
+environment:
+  device_model: ""       # e.g. 910C / A3; specify exact topology
+  device_count: 0
+  cann_version: ""
+  driver_version: ""
+  firmware_version: ""
+  pytorch_version: ""
+  torch_npu_version: ""
+  python_version: ""
+  container_image_digest: ""
+
+model:
+  name: ""
+  revision: ""
+  dtype: ""
+  quantization: ""
+
+workload:
+  dataset_or_trace: ""
+  input_tokens: 0
+  output_tokens: 0
+  concurrency: []
+  request_rate: ""
+  warmup_requests: 0
+  measured_requests: 0
+
+serving:
+  launch_command_redacted: ""
+  effective_config_file: ""
+
+metrics:
+  - ttft
+  - tpot
+  - throughput
+  - peak_hbm
+  - correctness
+
+artifacts:
+  raw_logs: ""
+  benchmark_results: ""
+  profiler_traces: ""
+  report: ""
+
+conclusion:
+  summary: ""
+  evidence_strength: "hypothesis" # hypothesis | single_observation | reproduced_empirical | upstream_documented
+  limitations: []
