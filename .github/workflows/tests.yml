@@ -9,7 +9,8 @@ permissions:
 
 jobs:
   installer:
-    runs-on: ubuntu-latest
+    # ubuntu-latest (26.04) has no setup-python build for our Python 3.9 minimum.
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         python-version: ['3.9', '3.12']
