@@ -65,6 +65,10 @@ python3 -m unittest discover -s tests -v
 
 采用 Plugin / Workflow → Agent → Skill 组织任务入口和专业能力；将确定性执行能力建设为独立服务；以可追溯知识库和实验数据作为持续迭代基础。
 
+## 第三方许可证
+
+迁入自 Ascend/agent-skills 的文件保留 MulanPSL-2.0 来源标记，不由本仓库根目录 Apache-2.0 许可证覆盖。详见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+
 ## 主要技术来源
 
 - [CANNBot](https://gitcode.com/cann/cannbot) / [CANNBot Skills](https://gitcode.com/cann/cannbot-skills)：Agent、Plugin、Skill 组织方式。
